@@ -92,6 +92,7 @@ python scripts/predict.py --weights runs/s_960/weights/best.pt --source video.mp
 
 **Gợi ý thí nghiệm cho báo cáo** (mỗi lần dùng một `--name` khác nhau, sau đó chạy `compare_runs.py`):
 - so sánh kích thước model n/s/m: `--model yolo11n.pt / yolo11s.pt / yolo11m.pt`,
+- so sánh thế hệ model YOLO11 và YOLO26 (bản mới hơn của Ultralytics): `--model yolo26s.pt`,
 - so sánh imgsz 640/960/1280,
 - bật lật ngang để chứng minh nó gây hại cho biển trái/phải: `--fliplr 0.5`,
 - so sánh có và không có dữ liệu tự quay.

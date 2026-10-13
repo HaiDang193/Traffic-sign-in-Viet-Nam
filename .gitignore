@@ -5,6 +5,7 @@ runs/
 outputs/
 downloads/
 *.pt
+weights/
 !models/.gitkeep
 *.mp4
 *.mov
@@ -27,3 +28,4 @@ venv/
 Thumbs.db
 .vscode/
 .idea/
+reports/

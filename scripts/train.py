@@ -36,32 +36,33 @@ def main():
     model = YOLO(args.model)
     if args.resume:
         model.train(resume=True)
-        return
+    else:
+        cfg = yaml.safe_load(args.config.read_text(encoding="utf-8"))
+        # Remaining --key value pairs override the yaml config.
+        it = iter(extra)
+        for k in it:
+            if not k.startswith("--"):
+                sys.exit(f"Unexpected argument: {k}")
+            cfg[k[2:].replace("-", "_")] = parse_value(next(it))
+        model.train(data=str(args.data), project=str(args.project), name=args.name, exist_ok=False, **cfg)
 
-    cfg = yaml.safe_load(args.config.read_text(encoding="utf-8"))
-    # Remaining --key value pairs override the yaml config.
-    it = iter(extra)
-    for k in it:
-        if not k.startswith("--"):
-            sys.exit(f"Unexpected argument: {k}")
-        cfg[k[2:].replace("-", "_")] = parse_value(next(it))
-
-    model.train(data=str(args.data), project=str(args.project), name=args.name, exist_ok=False, **cfg)
-
-    best = YOLO(str(Path(model.trainer.save_dir) / "weights" / "best.pt"))
-    m = best.val(data=str(args.data), split="test", imgsz=cfg.get("imgsz", 640),
-                 project=str(args.project), name=f"{Path(model.trainer.save_dir).name}_test")
+    # Evaluate the best checkpoint on the test split (settings read back from the run's args.yaml).
+    save_dir = Path(model.trainer.save_dir)
+    run_args = yaml.safe_load((save_dir / "args.yaml").read_text(encoding="utf-8"))
+    best = YOLO(str(save_dir / "weights" / "best.pt"))
+    m = best.val(data=run_args["data"], split="test", imgsz=run_args["imgsz"],
+                 project=str(save_dir.parent), name=f"{save_dir.name}_test")
     summary = {
-        "name": Path(model.trainer.save_dir).name,
-        "model": args.model,
-        "imgsz": cfg.get("imgsz"),
+        "name": save_dir.name,
+        "model": Path(str(run_args["model"])).name,
+        "imgsz": run_args["imgsz"],
         "test_mAP50": round(float(m.box.map50), 4),
         "test_mAP50_95": round(float(m.box.map), 4),
         "test_precision": round(float(m.box.mp), 4),
         "test_recall": round(float(m.box.mr), 4),
         "speed_ms_per_img": {k: round(v, 2) for k, v in m.speed.items()},
     }
-    out = Path(model.trainer.save_dir) / "test_summary.json"
+    out = save_dir / "test_summary.json"
     out.write_text(json.dumps(summary, indent=2))
     print(json.dumps(summary, indent=2))
 
