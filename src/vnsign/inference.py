@@ -76,6 +76,63 @@ class SignDetector:
                                     device=self.device, verbose=False)[0]
         return self._to_detections(result)
 
+    def predict_tiled(self, image_bgr: np.ndarray, tile: int = 640, overlap: float = 0.25,
+                      iou: float = 0.5) -> list[Detection]:
+        """Sliced inference (same idea as SAHI) for small, far-away signs.
+
+        Runs the model on overlapping tiles at native resolution plus on the whole image,
+        then merges everything with class-wise NMS. Slower; use for images, not video.
+        """
+        import torch
+        from torchvision.ops import batched_nms
+
+        h, w = image_bgr.shape[:2]
+        step = max(1, int(tile * (1 - overlap)))
+        xs = list(range(0, max(w - tile, 0) + 1, step)) or [0]
+        ys = list(range(0, max(h - tile, 0) + 1, step)) or [0]
+        if xs[-1] + tile < w:
+            xs.append(w - tile)
+        if ys[-1] + tile < h:
+            ys.append(h - tile)
+        offsets = [(max(x, 0), max(y, 0)) for y in ys for x in xs]
+        crops = [image_bgr[y:y + tile, x:x + tile] for x, y in offsets]
+
+        boxes, scores, classes = [], [], []
+        results = self.model.predict(crops, conf=self.conf, imgsz=tile, device=self.device, verbose=False)
+        results += self.model.predict(image_bgr, conf=self.conf, imgsz=self.imgsz, device=self.device, verbose=False)
+        for (ox, oy), r in zip(offsets + [(0, 0)], results):
+            if r.boxes is None or len(r.boxes) == 0:
+                continue
+            b = r.boxes.xyxy.cpu().clone()
+            b[:, [0, 2]] += ox
+            b[:, [1, 3]] += oy
+            boxes.append(b)
+            scores.append(r.boxes.conf.cpu())
+            classes.append(r.boxes.cls.cpu())
+        if not boxes:
+            return []
+        boxes, scores, classes = torch.cat(boxes), torch.cat(scores), torch.cat(classes)
+        keep = batched_nms(boxes, scores, classes.long(), iou).tolist()
+        # A sign cut by a tile border gives a partial box that NMS (IoU) does not remove:
+        # also drop boxes mostly inside a higher-scoring box (intersection / smaller area).
+        final = []
+        for i in keep:  # keep is sorted by score, descending
+            bi = boxes[i]
+            area_i = (bi[2] - bi[0]) * (bi[3] - bi[1])
+            dup = False
+            for j in final:
+                bj = boxes[j]
+                iw = (torch.min(bi[2], bj[2]) - torch.max(bi[0], bj[0])).clamp(min=0)
+                ih = (torch.min(bi[3], bj[3]) - torch.max(bi[1], bj[1])).clamp(min=0)
+                smaller = torch.min(area_i, (bj[2] - bj[0]) * (bj[3] - bj[1]))
+                if smaller > 0 and iw * ih / smaller > 0.6:
+                    dup = True
+                    break
+            if not dup:
+                final.append(i)
+        return [Detection(self.id_to_class[int(classes[i])], float(scores[i]),
+                          tuple(int(v) for v in boxes[i].tolist())) for i in final]
+
     def track(self, frame_bgr: np.ndarray) -> list[Detection]:
         """Detect + track on one video frame. Call frames in order; tracker state persists."""
         result = self.model.track(frame_bgr, conf=self.conf, imgsz=self.imgsz, device=self.device,

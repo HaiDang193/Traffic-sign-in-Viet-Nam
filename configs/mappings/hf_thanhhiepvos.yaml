@@ -1,0 +1,53 @@
+# thanhhiepvos/vietnam_traffic_sign (archive/classes.txt) -> key trong configs/classes.yaml
+"W.224": w224
+"W.205c": w205c
+"P.102": p102
+"R.302a": r302a
+"W.205a": w205a
+"W.207": w207
+"W.201a": w201a
+"P.123a": p123a
+"I.434a": i434a
+"R.303": r303
+"P.130": p130
+"I.409": i409
+"R.415a": r415a
+"W.245a": w245a
+"P.106a*Xe tải": p106a
+"W.203c": w203c
+"P.117*": p117
+"P.124a*": p124a
+"P.107": p107
+"P.124d": p124d
+"P.103a": p103a
+"W.203b": w203b
+"W.221b": w221b
+"P.111": p111
+"P.129": p129
+"S.505a*Xe máy": s505a
+"W.246a": w246a
+"W.225": w225
+"S.505a*Xe tải và công": s505a
+"P.104": p104
+"S.505a*Xe tải": s505a
+"Camera": camera
+"P.123b": p123b
+"W.202b": w202b
+"B.8a": other            # "Cấm xe sơ-mi rơ-moóc" - mã không chuẩn, gom vào other
+"P.137": p137
+"P.139": p139
+"W.205b": w205b
+"P.127*50": p127_50
+"P.127*60": p127_60
+"P.127*80": p127_80
+"P.127*40": p127_40
+"R.301e": r301e
+"W.239b*": w239b
+"W.233": w233
+"I.407a": i407a
+"P.131a": p131a
+"P.124b1": p124b
+"W.210": w210
+"P.124c": p124c
+"W.201b": w201b
+"W.246c": w246c

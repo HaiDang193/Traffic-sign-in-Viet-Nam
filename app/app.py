@@ -50,9 +50,10 @@ tab_img, tab_video = st.tabs(["🖼️ Ảnh", "🎥 Video hành trình"])
 # ---------------- Image ----------------
 with tab_img:
     files = st.file_uploader("Chọn ảnh", type=["jpg", "jpeg", "png", "webp"], accept_multiple_files=True)
+    tiled = st.checkbox("Chế độ cắt ô (bắt biển nhỏ / ở xa, chậm hơn)")
     for f in files or []:
         img = cv2.imdecode(np.frombuffer(f.read(), np.uint8), cv2.IMREAD_COLOR)
-        dets = det.predict(img)
+        dets = det.predict_tiled(img) if tiled else det.predict(img)
         col1, col2 = st.columns([3, 2])
         col1.image(cv2.cvtColor(draw_detections(img, dets), cv2.COLOR_BGR2RGB), caption=f.name,
                    use_container_width=True)

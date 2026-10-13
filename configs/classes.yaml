@@ -1,60 +1,104 @@
 # Danh sách lớp biển báo của dự án (theo QCVN 41 - Quy chuẩn báo hiệu đường bộ).
-# - Thứ tự trong danh sách = class_id của YOLO. KHÔNG đổi thứ tự sau khi đã gán nhãn,
+# Được dựng từ hợp các lớp của 2 dataset trong configs/datasets.yaml (xem configs/mappings/).
+#
+# - Thứ tự trong danh sách = class_id của YOLO. KHÔNG đổi thứ tự sau khi đã train / gán nhãn,
 #   chỉ thêm lớp mới vào CUỐI danh sách.
-# - `key`  : tên ngắn không dấu, dùng trong code / Roboflow.
-# - `code` : mã biển trong QCVN. Nhóm cần đối chiếu lại với QCVN 41:2024/BGTVT (bản hiện hành).
+# - `key`  : tên ngắn không dấu, dùng trong code / Roboflow / file mapping.
+# - `code` : mã biển. Những dòng có "# ?" là mã chưa chắc chắn -> nhóm đối chiếu với QCVN 41:2024/BGTVT.
 # - `group`: cam (P), nguy_hiem (W), hieu_lenh (R), chi_dan (I), phu (S), khac.
-# Gợi ý: chỉ giữ lại những lớp có đủ dữ liệu (>= ~100 bbox), lớp hiếm gộp vào `other`.
 
 classes:
   # ---------------- Biển cấm (P) ----------------
-  - {key: p101,  code: P.101,  group: cam, name: "Đường cấm", meaning: "Cấm mọi loại phương tiện đi lại cả hai hướng (trừ xe ưu tiên)."}
-  - {key: p102,  code: P.102,  group: cam, name: "Cấm đi ngược chiều", meaning: "Cấm các loại xe đi vào theo chiều đặt biển."}
-  - {key: p103a, code: P.103a, group: cam, name: "Cấm xe ô tô", meaning: "Cấm xe ô tô (trừ xe ưu tiên) đi qua."}
-  - {key: p104,  code: P.104,  group: cam, name: "Cấm xe máy", meaning: "Cấm xe máy đi qua."}
-  - {key: p106a, code: P.106a, group: cam, name: "Cấm xe ô tô tải", meaning: "Cấm xe ô tô tải đi qua."}
-  - {key: p112,  code: P.112,  group: cam, name: "Cấm người đi bộ", meaning: "Cấm người đi bộ qua lại."}
-  - {key: p117,  code: P.117,  group: cam, name: "Hạn chế chiều cao", meaning: "Cấm xe có chiều cao (cả hàng) vượt quá trị số ghi trên biển."}
-  - {key: p123a, code: P.123a, group: cam, name: "Cấm rẽ trái", meaning: "Cấm các loại xe rẽ trái tại vị trí đặt biển."}
-  - {key: p123b, code: P.123b, group: cam, name: "Cấm rẽ phải", meaning: "Cấm các loại xe rẽ phải tại vị trí đặt biển."}
-  - {key: p124a, code: P.124a, group: cam, name: "Cấm quay đầu xe", meaning: "Cấm các loại xe quay đầu."}
-  - {key: p124c, code: P.124c, group: cam, name: "Cấm rẽ trái và quay đầu xe", meaning: "Cấm các loại xe rẽ trái và quay đầu."}
-  - {key: p125,  code: P.125,  group: cam, name: "Cấm vượt", meaning: "Cấm các loại xe cơ giới vượt nhau."}
-  - {key: p127,  code: P.127,  group: cam, name: "Tốc độ tối đa cho phép", meaning: "Cấm xe chạy quá tốc độ ghi trên biển (km/h)."}
-  - {key: p128,  code: P.128,  group: cam, name: "Cấm sử dụng còi", meaning: "Cấm sử dụng còi trong khu vực đặt biển."}
-  - {key: p130,  code: P.130,  group: cam, name: "Cấm dừng xe và đỗ xe", meaning: "Cấm dừng và đỗ xe ở phía đường đặt biển."}
-  - {key: p131a, code: P.131a, group: cam, name: "Cấm đỗ xe", meaning: "Cấm đỗ xe ở phía đường đặt biển (được phép dừng)."}
-  - {key: p137,  code: P.137,  group: cam, name: "Cấm rẽ trái, rẽ phải", meaning: "Cấm rẽ trái và rẽ phải tại nơi giao nhau."}
-  - {key: dp135, code: DP.135, group: cam, name: "Hết tất cả các lệnh cấm", meaning: "Hết hiệu lực các biển cấm đã đặt trước đó."}
+  - {key: p102,    code: P.102,  group: cam, name: "Cấm đi ngược chiều", meaning: "Cấm các loại xe đi vào theo chiều đặt biển (trừ xe ưu tiên)."}
+  - {key: p103a,   code: P.103a, group: cam, name: "Cấm xe ô tô", meaning: "Cấm xe ô tô đi qua (trừ xe ưu tiên)."}
+  - {key: p103c,   code: P.103c, group: cam, name: "Cấm xe ô tô rẽ trái", meaning: "Cấm xe ô tô rẽ trái tại nơi đặt biển."}
+  - {key: p104,    code: P.104,  group: cam, name: "Cấm mô tô và xe máy", meaning: "Cấm mô tô, xe máy đi qua."}
+  - {key: p106a,   code: P.106a, group: cam, name: "Cấm xe ô tô tải", meaning: "Cấm xe ô tô tải đi qua."}
+  - {key: p107,    code: P.107,  group: cam, name: "Cấm ô tô khách và ô tô tải", meaning: "Cấm xe ô tô khách và ô tô tải đi qua."}
+  - {key: p107a,   code: P.107a, group: cam, name: "Cấm xe ô tô khách (xe buýt)", meaning: "Cấm xe ô tô chở khách đi qua."}  # ?
+  - {key: p111,    code: P.111,  group: cam, name: "Cấm xe hai và ba bánh", meaning: "Cấm xe gắn máy, xe hai bánh và ba bánh đi qua."}  # ?
+  - {key: p117,    code: P.117,  group: cam, name: "Hạn chế chiều cao", meaning: "Cấm xe có chiều cao (cả hàng) vượt quá trị số ghi trên biển."}
+  - {key: p123a,   code: P.123a, group: cam, name: "Cấm rẽ trái", meaning: "Cấm các loại xe rẽ trái."}
+  - {key: p123b,   code: P.123b, group: cam, name: "Cấm rẽ phải", meaning: "Cấm các loại xe rẽ phải."}
+  - {key: p124a,   code: P.124a, group: cam, name: "Cấm quay đầu xe", meaning: "Cấm các loại xe quay đầu."}
+  - {key: p124b,   code: P.124b, group: cam, name: "Cấm ô tô quay đầu xe", meaning: "Cấm xe ô tô quay đầu (được rẽ trái)."}
+  - {key: p124c,   code: P.124c, group: cam, name: "Cấm rẽ trái và quay đầu xe", meaning: "Cấm các loại xe rẽ trái và quay đầu."}
+  - {key: p124d,   code: P.124d, group: cam, name: "Cấm rẽ phải và quay đầu xe", meaning: "Cấm các loại xe rẽ phải và quay đầu."}
+  - {key: p124e,   code: P.124e, group: cam, name: "Cấm ô tô rẽ trái và quay đầu xe", meaning: "Cấm xe ô tô rẽ trái và quay đầu."}
+  - {key: p125,    code: P.125,  group: cam, name: "Cấm vượt", meaning: "Cấm các loại xe cơ giới vượt nhau."}
+  - {key: p127_10,  code: P.127, group: cam, name: "Tốc độ tối đa 10 km/h", meaning: "Cấm chạy quá 10 km/h."}
+  - {key: p127_20,  code: P.127, group: cam, name: "Tốc độ tối đa 20 km/h", meaning: "Cấm chạy quá 20 km/h."}
+  - {key: p127_30,  code: P.127, group: cam, name: "Tốc độ tối đa 30 km/h", meaning: "Cấm chạy quá 30 km/h."}
+  - {key: p127_40,  code: P.127, group: cam, name: "Tốc độ tối đa 40 km/h", meaning: "Cấm chạy quá 40 km/h."}
+  - {key: p127_50,  code: P.127, group: cam, name: "Tốc độ tối đa 50 km/h", meaning: "Cấm chạy quá 50 km/h."}
+  - {key: p127_60,  code: P.127, group: cam, name: "Tốc độ tối đa 60 km/h", meaning: "Cấm chạy quá 60 km/h."}
+  - {key: p127_70,  code: P.127, group: cam, name: "Tốc độ tối đa 70 km/h", meaning: "Cấm chạy quá 70 km/h."}
+  - {key: p127_80,  code: P.127, group: cam, name: "Tốc độ tối đa 80 km/h", meaning: "Cấm chạy quá 80 km/h."}
+  - {key: p127_90,  code: P.127, group: cam, name: "Tốc độ tối đa 90 km/h", meaning: "Cấm chạy quá 90 km/h."}
+  - {key: p127_100, code: P.127, group: cam, name: "Tốc độ tối đa 100 km/h", meaning: "Cấm chạy quá 100 km/h."}
+  - {key: p127_110, code: P.127, group: cam, name: "Tốc độ tối đa 110 km/h", meaning: "Cấm chạy quá 110 km/h."}
+  - {key: p127_120, code: P.127, group: cam, name: "Tốc độ tối đa 120 km/h", meaning: "Cấm chạy quá 120 km/h."}
+  - {key: p128,    code: P.128,  group: cam, name: "Cấm sử dụng còi", meaning: "Cấm sử dụng còi trong khu vực đặt biển."}
+  - {key: p129,    code: P.129,  group: cam, name: "Kiểm tra", meaning: "Nơi đặt trạm kiểm tra, các xe phải dừng lại để làm thủ tục."}
+  - {key: p130,    code: P.130,  group: cam, name: "Cấm dừng xe và đỗ xe", meaning: "Cấm dừng và đỗ xe ở phía đường đặt biển."}
+  - {key: p131a,   code: P.131a, group: cam, name: "Cấm đỗ xe", meaning: "Cấm đỗ xe ở phía đường đặt biển (được phép dừng)."}
+  - {key: p131b,   code: P.131b, group: cam, name: "Cấm đỗ xe ngày lẻ", meaning: "Cấm đỗ xe vào các ngày lẻ."}
+  - {key: p131c,   code: P.131c, group: cam, name: "Cấm đỗ xe ngày chẵn", meaning: "Cấm đỗ xe vào các ngày chẵn."}
+  - {key: p137,    code: P.137,  group: cam, name: "Cấm rẽ trái và rẽ phải", meaning: "Cấm các loại xe rẽ trái và rẽ phải."}
+  - {key: p139,    code: P.139,  group: cam, name: "Cấm đi thẳng và rẽ phải", meaning: "Cấm các loại xe đi thẳng và rẽ phải."}
+  - {key: dp134,   code: DP.134, group: cam, name: "Hết hạn chế tốc độ tối đa", meaning: "Hết đoạn đường hạn chế tốc độ tối đa."}
+  - {key: dp135,   code: DP.135, group: cam, name: "Hết tất cả các lệnh cấm", meaning: "Hết hiệu lực các biển cấm đặt trước đó."}
+  - {key: r122,    code: R.122,  group: hieu_lenh, name: "Dừng lại", meaning: "Các xe phải dừng lại trước vạch dừng rồi mới được đi tiếp."}
 
   # ---------------- Biển nguy hiểm và cảnh báo (W) ----------------
-  - {key: w201a, code: W.201a, group: nguy_hiem, name: "Chỗ ngoặt nguy hiểm vòng bên trái", meaning: "Phía trước có chỗ ngoặt nguy hiểm vòng bên trái."}
-  - {key: w201b, code: W.201b, group: nguy_hiem, name: "Chỗ ngoặt nguy hiểm vòng bên phải", meaning: "Phía trước có chỗ ngoặt nguy hiểm vòng bên phải."}
-  - {key: w203,  code: W.203,  group: nguy_hiem, name: "Đường bị hẹp", meaning: "Phía trước đường bị thu hẹp."}
-  - {key: w205,  code: W.205,  group: nguy_hiem, name: "Đường giao nhau", meaning: "Phía trước có nơi giao nhau cùng cấp."}
-  - {key: w207,  code: W.207,  group: nguy_hiem, name: "Giao nhau với đường không ưu tiên", meaning: "Phía trước giao với đường không ưu tiên, xe trên đường chính được đi trước."}
-  - {key: w208,  code: W.208,  group: nguy_hiem, name: "Giao nhau với đường ưu tiên", meaning: "Phía trước giao với đường ưu tiên, phải nhường đường."}
-  - {key: w209,  code: W.209,  group: nguy_hiem, name: "Giao nhau có tín hiệu đèn", meaning: "Phía trước có nơi giao nhau điều khiển bằng đèn tín hiệu."}
-  - {key: w210,  code: W.210,  group: nguy_hiem, name: "Giao nhau với đường sắt có rào chắn", meaning: "Phía trước giao với đường sắt có rào chắn."}
-  - {key: w219,  code: W.219,  group: nguy_hiem, name: "Dốc xuống nguy hiểm", meaning: "Phía trước có dốc xuống nguy hiểm."}
-  - {key: w224,  code: W.224,  group: nguy_hiem, name: "Đường người đi bộ cắt ngang", meaning: "Phía trước có vạch đi bộ qua đường."}
-  - {key: w225,  code: W.225,  group: nguy_hiem, name: "Trẻ em", meaning: "Khu vực có trẻ em qua lại (trường học, sân chơi)."}
-  - {key: w227,  code: W.227,  group: nguy_hiem, name: "Công trường", meaning: "Phía trước có công trường đang thi công."}
-  - {key: w245a, code: W.245a, group: nguy_hiem, name: "Đi chậm", meaning: "Nhắc lái xe giảm tốc độ, đi chậm."}
+  - {key: w201a,   code: W.201a, group: nguy_hiem, name: "Chỗ ngoặt nguy hiểm vòng bên trái", meaning: "Phía trước có chỗ ngoặt nguy hiểm vòng bên trái."}
+  - {key: w201b,   code: W.201b, group: nguy_hiem, name: "Chỗ ngoặt nguy hiểm vòng bên phải", meaning: "Phía trước có chỗ ngoặt nguy hiểm vòng bên phải."}
+  - {key: w202b,   code: W.202b, group: nguy_hiem, name: "Nhiều chỗ ngoặt nguy hiểm liên tiếp", meaning: "Phía trước có nhiều chỗ ngoặt liên tiếp, chỗ đầu tiên sang phải."}
+  - {key: w203a,   code: W.203a, group: nguy_hiem, name: "Đường bị hẹp cả hai bên", meaning: "Phía trước đường bị thu hẹp cả hai bên."}
+  - {key: w203b,   code: W.203b, group: nguy_hiem, name: "Đường bị hẹp về phía trái", meaning: "Phía trước đường bị thu hẹp về phía trái."}
+  - {key: w203c,   code: W.203c, group: nguy_hiem, name: "Đường bị hẹp về phía phải", meaning: "Phía trước đường bị thu hẹp về phía phải."}
+  - {key: w205a,   code: W.205a, group: nguy_hiem, name: "Đường giao nhau cùng cấp", meaning: "Phía trước có nơi giao nhau với đường cùng cấp."}
+  - {key: w205b,   code: W.205b, group: nguy_hiem, name: "Đường giao nhau (ngã ba bên trái)", meaning: "Phía trước có ngã ba giao nhau bên trái."}
+  - {key: w205c,   code: W.205c, group: nguy_hiem, name: "Đường giao nhau (ngã ba bên phải)", meaning: "Phía trước có ngã ba giao nhau bên phải."}
+  - {key: w207,    code: W.207,  group: nguy_hiem, name: "Giao nhau với đường không ưu tiên", meaning: "Phía trước giao với đường không ưu tiên; xe trên đường chính được đi trước."}
+  - {key: w208,    code: W.208,  group: nguy_hiem, name: "Giao nhau với đường ưu tiên", meaning: "Phía trước giao với đường ưu tiên; phải nhường đường."}
+  - {key: w209,    code: W.209,  group: nguy_hiem, name: "Giao nhau có tín hiệu đèn", meaning: "Phía trước có nơi giao nhau điều khiển bằng đèn tín hiệu."}
+  - {key: w210,    code: W.210,  group: nguy_hiem, name: "Giao nhau với đường sắt có rào chắn", meaning: "Phía trước giao với đường sắt có rào chắn."}
+  - {key: w214,    code: W.214,  group: nguy_hiem, name: "Cầu hẹp", meaning: "Phía trước có cầu hẹp."}  # ?
+  - {key: w220,    code: W.220,  group: nguy_hiem, name: "Dốc lên nguy hiểm", meaning: "Phía trước có dốc lên nguy hiểm."}  # ?
+  - {key: w221a,   code: W.221a, group: nguy_hiem, name: "Đường không bằng phẳng", meaning: "Phía trước mặt đường có ổ gà, lồi lõm."}  # ?
+  - {key: w221b,   code: W.221b, group: nguy_hiem, name: "Gồ giảm tốc phía trước", meaning: "Phía trước có gồ (gờ) giảm tốc, cần giảm tốc độ."}
+  - {key: w222a,   code: W.222a, group: nguy_hiem, name: "Đường trơn", meaning: "Phía trước mặt đường trơn trượt."}  # ?
+  - {key: w224,    code: W.224,  group: nguy_hiem, name: "Đường người đi bộ cắt ngang", meaning: "Phía trước có vạch đi bộ qua đường."}
+  - {key: w225,    code: W.225,  group: nguy_hiem, name: "Trẻ em", meaning: "Khu vực có trẻ em qua lại (trường học, sân chơi)."}
+  - {key: w227,    code: W.227,  group: nguy_hiem, name: "Công trường", meaning: "Phía trước có công trường đang thi công."}
+  - {key: w233,    code: W.233,  group: nguy_hiem, name: "Nguy hiểm khác", meaning: "Phía trước có nguy hiểm khác, cần chú ý."}
+  - {key: w235,    code: W.235,  group: nguy_hiem, name: "Đường đôi", meaning: "Phía trước bắt đầu đường đôi (có dải phân cách giữa)."}  # ?
+  - {key: w239b,   code: W.239b, group: nguy_hiem, name: "Chiều cao tĩnh không thực tế", meaning: "Cảnh báo chiều cao tĩnh không thực tế phía trước."}
+  - {key: w245a,   code: W.245a, group: nguy_hiem, name: "Đi chậm", meaning: "Nhắc lái xe giảm tốc độ, đi chậm."}
+  - {key: w246a,   code: W.246a, group: nguy_hiem, name: "Chú ý chướng ngại vật", meaning: "Phía trước có chướng ngại vật, cần chú ý."}
+  - {key: w246c,   code: W.246c, group: nguy_hiem, name: "Chướng ngại vật - vòng tránh sang phải", meaning: "Có chướng ngại vật, vòng tránh sang bên phải."}
+  - {key: tai_nan, code: "W", group: nguy_hiem, name: "Đoạn đường hay xảy ra tai nạn", meaning: "Đoạn đường thường xảy ra tai nạn, cần đi cẩn thận."}  # ?
 
   # ---------------- Biển hiệu lệnh (R) ----------------
-  - {key: r301,  code: R.301,  group: hieu_lenh, name: "Hướng đi phải theo", meaning: "Các xe chỉ được đi theo hướng mũi tên chỉ (gộp các biến thể R.301a-h)."}
-  - {key: r302,  code: R.302,  group: hieu_lenh, name: "Hướng phải đi vòng chướng ngại vật", meaning: "Xe phải đi vòng qua chướng ngại vật theo hướng mũi tên."}
-  - {key: r303,  code: R.303,  group: hieu_lenh, name: "Nơi giao nhau chạy theo vòng xuyến", meaning: "Các xe phải chạy vòng theo đảo an toàn ở nơi giao nhau."}
-  - {key: r304,  code: R.304,  group: hieu_lenh, name: "Đường dành cho xe thô sơ", meaning: "Đường chỉ dành cho xe thô sơ và người đi bộ."}
+  - {key: r301d,   code: R.301d, group: hieu_lenh, name: "Các xe chỉ được rẽ phải", meaning: "Các xe chỉ được rẽ phải."}  # ?
+  - {key: r301e,   code: R.301e, group: hieu_lenh, name: "Các xe chỉ được rẽ trái", meaning: "Các xe chỉ được rẽ trái."}
+  - {key: r302a,   code: R.302a, group: hieu_lenh, name: "Phải đi vòng sang bên phải", meaning: "Xe phải đi vòng sang bên phải chướng ngại vật."}
+  - {key: r302b,   code: R.302b, group: hieu_lenh, name: "Phải đi vòng sang bên trái", meaning: "Xe phải đi vòng sang bên trái chướng ngại vật."}
+  - {key: r303,    code: R.303,  group: hieu_lenh, name: "Nơi giao nhau chạy theo vòng xuyến", meaning: "Các xe phải chạy vòng theo đảo an toàn."}
+  - {key: r305,    code: R.305,  group: hieu_lenh, name: "Đường dành cho người đi bộ", meaning: "Đường chỉ dành cho người đi bộ."}
+  - {key: r415a,   code: R.415a, group: hieu_lenh, name: "Biển phân làn / gộp làn theo phương tiện", meaning: "Chỉ dẫn làn đường dành cho từng loại phương tiện."}
+  - {key: r420,    code: R.420,  group: hieu_lenh, name: "Bắt đầu khu đông dân cư", meaning: "Bắt đầu khu đông dân cư, áp dụng tốc độ trong khu dân cư."}
+  - {key: r421,    code: R.421,  group: hieu_lenh, name: "Hết khu đông dân cư", meaning: "Hết khu đông dân cư."}  # ?
 
   # ---------------- Biển chỉ dẫn (I) ----------------
-  - {key: i407a, code: I.407a, group: chi_dan, name: "Đường một chiều", meaning: "Đường chỉ cho phép đi theo một chiều."}
-  - {key: i408,  code: I.408,  group: chi_dan, name: "Nơi đỗ xe", meaning: "Chỉ dẫn nơi được phép đỗ xe."}
-  - {key: i409,  code: I.409,  group: chi_dan, name: "Chỗ quay xe", meaning: "Chỉ dẫn vị trí được phép quay đầu xe."}
-  - {key: i423,  code: I.423,  group: chi_dan, name: "Đường người đi bộ sang ngang", meaning: "Chỉ dẫn vị trí dành cho người đi bộ sang đường."}
-  - {key: i434,  code: I.434,  group: chi_dan, name: "Bến xe buýt", meaning: "Chỉ dẫn vị trí điểm dừng xe buýt."}
+  - {key: i407a,   code: I.407a, group: chi_dan, name: "Đường một chiều", meaning: "Đường chỉ cho phép đi theo một chiều."}
+  - {key: i408,    code: I.408,  group: chi_dan, name: "Nơi đỗ xe", meaning: "Chỉ dẫn nơi được phép đỗ xe."}
+  - {key: i409,    code: I.409,  group: chi_dan, name: "Chỗ quay xe", meaning: "Chỉ dẫn vị trí được phép quay đầu xe."}
+  - {key: i425,    code: I.425,  group: chi_dan, name: "Bệnh viện", meaning: "Chỉ dẫn có bệnh viện, cơ sở y tế phía trước."}
+  - {key: i434a,   code: I.434a, group: chi_dan, name: "Bến xe buýt", meaning: "Chỉ dẫn vị trí điểm dừng xe buýt."}
+  - {key: camera,  code: "I",    group: chi_dan, name: "Đường có camera giám sát", meaning: "Đoạn đường có camera giám sát giao thông."}  # ?
 
   # ---------------- Biển phụ (S) và lớp gom ----------------
-  - {key: s_phu, code: S,      group: phu,  name: "Biển phụ", meaning: "Biển phụ bổ sung ý nghĩa cho biển chính (thời gian, loại xe, khoảng cách...)."}
-  - {key: other, code: "-",    group: khac, name: "Biển báo khác", meaning: "Biển báo không thuộc các lớp đã định nghĩa."}
+  - {key: s505a,   code: S.505a, group: phu,  name: "Biển phụ loại xe", meaning: "Biển phụ ghi loại xe mà biển chính áp dụng."}
+  - {key: other,   code: "-",    group: khac, name: "Biển báo khác", meaning: "Biển báo không thuộc các lớp đã định nghĩa."}

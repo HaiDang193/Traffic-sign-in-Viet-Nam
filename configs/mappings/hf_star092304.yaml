@@ -1,0 +1,84 @@
+# star092304/Traffic-sign-detection-VietNam (classid.csv, cột classes-en) -> key trong configs/classes.yaml
+# Giữ nguyên lỗi chính tả của nguồn ("hm/h", "Slown") vì phải khớp đúng tên.
+"No Entry": p102
+"Turn Right Only": r302a                 # VN: "Đi về bên phải"
+"Speed limit 40hm/h": p127_40
+"No Trucks and Bus": p107
+"No Trucks": p106a
+"Low Clearance": w239b
+"No Cars": p103a
+"Danger": w233
+"Slown Down": w245a
+"Double curve first to right": w202b
+"Obstacle on the Road": w246a
+"Road with Surveillance Camera": camera
+"Speed limit 60hm/h": p127_60
+"No Moto": p104
+"Lane Allocation": r415a
+"Height Limit": p117
+"No Horns": p128
+"No Left Turn": p123a
+"No Right Turn": p123b
+"No U-Turn": p124a
+"No U-Turn and No Left Turn": p124c
+"No U-Turn and No Right Turn": p124d
+"Traffic light ahead": w209
+"No Stopping & No Parking": p130
+"No Parking": p131a
+"No Straight and Right Turn": p139
+"No Left or Right Turn": p137
+"Sharp Left Turn": w201a
+"Sharp Right Turn": w201b
+"Intersection with a Minor Road": w207
+"Intersection with Equal Roads": w205a
+"No Moto Turn Left": other               # tên EN/VN của nguồn mâu thuẫn (trái/phải) -> other
+"Intersection with a Priority Road": w208
+"Pedestrian Lane": r305
+"Narrow Road Left Side": w203b
+"Narrow Road Right Side": w203c
+"Narrow road both sides": w203a
+"No Two or Three-wheeled Vehicles": p111
+"Speed Bump": w221b
+"Speed limit 50hm/h": p127_50
+"Speed limit 70hm/h": p127_70
+"Speed limit 80hm/h": p127_80
+"Level Crossing with Barriers": w210
+"No U-Turn for Cars": p124b
+"No bus": p107a
+"No Overtaking": p125
+"Children Crossing": w225
+"Pedestrian Crossing": w224
+"End of all prohibition": dp135
+"Keep left": r302b
+"Road Work Ahead": w227
+"One way street": i407a
+"Turn Left": r301e
+"Turn Right": r301d
+"Green Light": null                      # đèn giao thông, không phải biển báo -> bỏ
+"Red Light": null
+"Roundabout": r303
+"Speed limit 10km/h": p127_10
+"Speed limit 100km/h": p127_100
+"Speed limit 110km/h": p127_110
+"Speed limit 120km/h": p127_120
+"Speed limit 20km/h": p127_20
+"Speed limit 30km/h": p127_30
+"Speed limit 90km/h": p127_90
+"Stop": r122
+"U-Turn Area": i409
+"No Parking on Odd Days": p131b
+"No Parking on Even Days": p131c
+"Parking": i408
+"Bus Stop": i434a
+"Hospital": i425
+"No U-Turn and Left Turn for Cars": p124e
+"Accident area": tai_nan
+"Dual carriageway": w235
+"No left turn for cars": p103c
+"Steep ascent": w220
+"Narrow bridge": w214
+"Uneven road": w221a
+"End of 50km/h speed limit": dp134
+"Residential area": r420
+"sparsely populated area": r421
+"Slippery Road": w222a

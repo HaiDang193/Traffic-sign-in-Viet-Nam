@@ -10,4 +10,5 @@ matplotlib
 streamlit>=1.36
 imageio>=2.34
 imageio-ffmpeg>=0.5
-roboflow>=1.1         # scripts/download_datasets.py
+roboflow>=1.1         # scripts/download_datasets.py (Roboflow sources)
+huggingface_hub>=0.24 # scripts/download_datasets.py (Hugging Face sources)

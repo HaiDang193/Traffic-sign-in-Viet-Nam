@@ -8,6 +8,7 @@ Example:
     python scripts/split_dataset.py --ratios 0.75 0.15 0.10 --force
 """
 import argparse
+import hashlib
 import random
 import re
 import shutil
@@ -50,12 +51,24 @@ def main():
     if not sources:
         sys.exit(f"No sources in {args.pool}. Run import_dataset.py first.")
 
+    # Exact duplicate images (same bytes) may appear in several sources; keep only the first,
+    # otherwise one copy can land in train and the other in test.
     groups: dict[str, list[tuple[Path, Path]]] = defaultdict(list)
+    seen_hashes: set[str] = set()
+    n_dupes = 0
     for src in sources:
         for img in sorted((src / "images").iterdir()):
             lbl = src / "labels" / f"{img.stem}.txt"
-            if lbl.exists():
-                groups[f"{src.name}/{group_key(img.stem)}"].append((img, lbl))
+            if not lbl.exists():
+                continue
+            digest = hashlib.md5(img.read_bytes()).hexdigest()
+            if digest in seen_hashes:
+                n_dupes += 1
+                continue
+            seen_hashes.add(digest)
+            groups[f"{src.name}/{group_key(img.stem)}"].append((img, lbl))
+    if n_dupes:
+        print(f"Skipped {n_dupes} duplicate images")
 
     keys = sorted(groups)
     random.Random(args.seed).shuffle(keys)

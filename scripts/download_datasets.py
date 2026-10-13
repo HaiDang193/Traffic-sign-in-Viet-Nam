@@ -1,5 +1,9 @@
 """Download every dataset listed in configs/datasets.yaml, then import it into data/pool/.
 
+Sources: huggingface (public, no key needed), roboflow, url (zip).
+Hugging Face may rate-limit anonymous downloads (HTTP 429): the download waits and retries by
+itself; if interrupted, just rerun - it resumes. A free HF token in the HF_TOKEN env variable
+raises the limit.
 Roboflow datasets need a (free) API key: roboflow.com -> Settings -> API Keys.
 Put it in a file `.env` at the project root (already git-ignored):
     ROBOFLOW_API_KEY=xxxxxxxx
@@ -17,6 +21,7 @@ Examples:
 Then: python scripts/split_dataset.py --force
 """
 import argparse
+import csv
 import os
 import shutil
 import subprocess
@@ -55,17 +60,55 @@ def download_roboflow(ds: dict, dest: Path):
     version.download("yolov8", location=str(dest), overwrite=True)
 
 
-def download_url(ds: dict, dest: Path):
-    zip_path = DOWNLOADS / "_zips" / f"{ds['name']}.zip"
-    zip_path.parent.mkdir(parents=True, exist_ok=True)
-    print(f"  GET {ds['url']}")
-    urllib.request.urlretrieve(ds["url"], zip_path)
-    dest.mkdir(parents=True)
+def extract_zip(zip_path: Path, dest: Path):
+    print(f"  extracting {zip_path.name} ...")
+    dest.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(zip_path) as zf:
         for member in zf.namelist():  # refuse paths escaping the destination
             if not (dest / member).resolve().is_relative_to(dest.resolve()):
                 sys.exit(f"Unsafe path in zip: {member}")
         zf.extractall(dest)
+
+
+def download_url(ds: dict, dest: Path):
+    zip_path = DOWNLOADS / "_zips" / f"{ds['name']}.zip"
+    zip_path.parent.mkdir(parents=True, exist_ok=True)
+    print(f"  GET {ds['url']}")
+    urllib.request.urlretrieve(ds["url"], zip_path)
+    extract_zip(zip_path, dest)
+
+
+def download_huggingface(ds: dict, dest: Path):
+    """Public Hugging Face dataset repo: either one zip file inside it, or the repo files themselves."""
+    from huggingface_hub import hf_hub_download, snapshot_download
+
+    if ds.get("file"):
+        zip_dir = DOWNLOADS / "_zips" / ds["name"]
+        print(f"  GET hf://{ds['repo']}/{ds['file']}")
+        zip_path = hf_hub_download(ds["repo"], ds["file"], repo_type="dataset", local_dir=zip_dir)
+        extract_zip(Path(zip_path), dest)
+        for extra in ds.get("extra_files", []):
+            hf_hub_download(ds["repo"], extra, repo_type="dataset", local_dir=dest)
+    else:
+        print(f"  GET hf://{ds['repo']} ({ds.get('allow_patterns') or 'all files'})")
+        snapshot_download(ds["repo"], repo_type="dataset", local_dir=dest,
+                          allow_patterns=ds.get("allow_patterns"), max_workers=8)
+
+
+def ensure_data_yaml(ds: dict, dest: Path):
+    """import_dataset.py needs a data.yaml with `names`. Some datasets ship classes.txt or a csv instead."""
+    if list(dest.glob("data.yaml")) or list(dest.rglob("data.yaml")):
+        return
+    if ds.get("names_csv"):
+        with open(dest / ds["names_csv"], encoding="utf-8-sig", newline="") as f:
+            names = [row[ds["names_column"]].strip() for row in csv.DictReader(f)]
+    else:
+        txts = list(dest.rglob("classes.txt"))
+        if not txts:
+            sys.exit(f"{dest} has no data.yaml / classes.txt; set names_csv in datasets.yaml")
+        names = [l.strip() for l in txts[0].read_text(encoding="utf-8-sig").splitlines() if l.strip()]
+    with open(dest / "data.yaml", "w", encoding="utf-8") as f:
+        yaml.safe_dump({"names": names}, f, allow_unicode=True)
 
 
 def source_names(dest: Path) -> list[str]:
@@ -120,16 +163,21 @@ def main():
         name = ds["name"]
         dest = DOWNLOADS / name
         print(f"\n=== {name} ({ds['source']}) ===")
+        done_marker = dest / ".download_complete"
         if dest.exists() and args.force:
             shutil.rmtree(dest)
-        if dest.exists():
+        if done_marker.exists():
             print(f"  already downloaded: {dest}")
-        elif ds["source"] == "roboflow":
-            download_roboflow(ds, dest)
-        elif ds["source"] == "url":
-            download_url(ds, dest)
         else:
-            sys.exit(f"Unknown source '{ds['source']}' for {name}")
+            # Interrupted earlier: Hugging Face downloads resume where they stopped, others restart.
+            if dest.exists() and ds["source"] != "huggingface":
+                shutil.rmtree(dest)
+            downloaders = {"roboflow": download_roboflow, "url": download_url, "huggingface": download_huggingface}
+            if ds["source"] not in downloaders:
+                sys.exit(f"Unknown source '{ds['source']}' for {name}")
+            downloaders[ds["source"]](ds, dest)
+            ensure_data_yaml(ds, dest)
+            done_marker.touch()
 
         names = source_names(dest)
         print(f"  {len(names)} classes: {names}")

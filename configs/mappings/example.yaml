@@ -1,18 +1,13 @@
 # Ví dụ file mapping cho scripts/import_dataset.py
 # Bên trái: tên lớp trong data.yaml của dataset nguồn (copy y nguyên, kể cả dấu cách / hoa thường)
 # Bên phải: key trong configs/classes.yaml, hoặc null để bỏ các bbox của lớp đó.
-# Cách lấy danh sách tên nguồn: mở data.yaml của dataset đã tải, xem mục `names`.
+# Xem 2 file thật: hf_thanhhiepvos.yaml, hf_star092304.yaml
 
 "No entry": p102
 "No parking": p131a
 "No stopping and parking": p130
-"No left turn": p123a
-"No right turn": p123b
-"No U-turn": p124a
-"Speed limit": p127
+"Speed limit 50": p127_50
 "Pedestrian crossing": w224
-"Children": w225
 "Roundabout": r303
-"One way": i407a
 "Other prohibition": other
 "car": null

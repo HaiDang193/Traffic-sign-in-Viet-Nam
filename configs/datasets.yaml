@@ -1,35 +1,41 @@
 # Các dataset mà scripts/download_datasets.py sẽ tải.
 #
-# Lấy thông tin Roboflow: mở trang dataset trên https://universe.roboflow.com
-#   -> Download Dataset -> chọn YOLOv8 -> "Show download code", trong code có dạng:
-#      rf.workspace("WORKSPACE").project("PROJECT").version(N)
-#   Copy WORKSPACE, PROJECT, N vào đây. Kiểm tra license (nên là CC BY 4.0) và danh sách lớp.
+# source:
+#   huggingface : dataset công khai trên huggingface.co (không cần tài khoản / key)
+#   roboflow    : cần ROBOFLOW_API_KEY trong .env. Lấy workspace/project/version trên trang dataset:
+#                 Download Dataset -> YOLOv8 -> "Show download code" -> rf.workspace("W").project("P").version(N)
+#   url         : file zip định dạng YOLO có link tải trực tiếp
 #
-# mapping : file map tên lớp nguồn -> key trong classes.yaml. Nếu chưa có, script sẽ tự tạo
-#           file mẫu để nhóm điền (các tên trùng mã QCVN như "P.102" được điền sẵn).
+# mapping : file map tên lớp nguồn -> key trong classes.yaml. Nếu chưa có, script tự tạo bản nháp.
 # unmapped: error | other | drop  (xử lý lớp nguồn chưa map, xem import_dataset.py)
 # enabled : false = bỏ qua dataset này.
+# Luôn kiểm tra license trước khi dùng và ghi nguồn (attribution) trong báo cáo.
 
 datasets:
-  - name: rf_vn_traffic
+  # 3.216 ảnh, 52 lớp đặt tên theo mã QCVN. License CC BY-SA 3.0.
+  # https://huggingface.co/datasets/thanhhiepvos/vietnam_traffic_sign
+  - name: hf_thanhhiepvos
     enabled: true
-    source: roboflow
-    workspace: projectxla
-    project: vn_traffic
-    version: 1            # TODO: kiểm tra version mới nhất trên trang dataset
-    mapping: configs/mappings/rf_vn_traffic.yaml
+    source: huggingface
+    repo: thanhhiepvos/vietnam_traffic_sign
+    allow_patterns: ["archive/**"]
+    mapping: configs/mappings/hf_thanhhiepvos.yaml
     unmapped: error
 
-  - name: rf_vn_traffic_sign_2
+  # 10.157 ảnh, 82 lớp (tên tiếng Anh/Việt trong classid.csv), zip ~905 MB. License CC BY 4.0 (theo dataset card).
+  # https://huggingface.co/datasets/star092304/Traffic-sign-detection-VietNam
+  - name: hf_star092304
     enabled: true
-    source: roboflow
-    workspace: trafficsignvietnamese
-    project: vn_traffic_sign_2
-    version: 1            # TODO: kiểm tra version mới nhất trên trang dataset
-    mapping: configs/mappings/rf_vn_traffic_sign_2.yaml
+    source: huggingface
+    repo: star092304/Traffic-sign-detection-VietNam
+    file: traffic-sign-detection-vietnam.zip
+    extra_files: [classid.csv]
+    names_csv: classid.csv
+    names_column: classes-en
+    mapping: configs/mappings/hf_star092304.yaml
     unmapped: error
 
-  # Dữ liệu nhóm tự gán nhãn trên Roboflow (tên lớp đặt đúng bằng key, nên không cần mapping)
+  # Dữ liệu nhóm tự gán nhãn trên Roboflow (đặt tên lớp đúng bằng key trong classes.yaml -> không cần mapping)
   - name: team
     enabled: false
     source: roboflow
@@ -38,10 +44,12 @@ datasets:
     version: 1
     unmapped: error
 
-  # Dataset dạng file zip (định dạng YOLO) có link tải trực tiếp
-  - name: zip_example
+  # Ví dụ dataset trên Roboflow Universe (cần API key; kiểm tra version trên trang trước khi bật)
+  - name: rf_vn_traffic
     enabled: false
-    source: url
-    url: https://example.com/dataset_yolo.zip
-    mapping: configs/mappings/zip_example.yaml
-    unmapped: other
+    source: roboflow
+    workspace: projectxla
+    project: vn_traffic
+    version: 1
+    mapping: configs/mappings/rf_vn_traffic.yaml
+    unmapped: error

@@ -23,14 +23,14 @@ IMG_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 VIDEO_EXTS = {".mp4", ".mov", ".avi", ".mkv", ".m4v"}
 
 
-def run_images(det: SignDetector, paths: list[Path], out: Path):
+def run_images(det: SignDetector, paths: list[Path], out: Path, tiled: bool = False):
     results = {}
     for p in paths:
         img = cv2.imread(str(p))
         if img is None:
             print(f"[skip] cannot read {p}")
             continue
-        dets = det.predict(img)
+        dets = det.predict_tiled(img) if tiled else det.predict(img)
         cv2.imwrite(str(out / p.name), draw_detections(img, dets))
         results[p.name] = [d.to_dict() for d in dets]
         print(f"{p.name}: " + (", ".join(f"{d.cls.code} {d.conf:.2f}" for d in dets) or "no sign"))
@@ -83,6 +83,7 @@ def main():
     ap.add_argument("--imgsz", type=int, default=960)
     ap.add_argument("--min-hits", type=int, default=3, help="video: frames a sign must be tracked to be logged")
     ap.add_argument("--device", default=None, help="e.g. 0 or cpu")
+    ap.add_argument("--tiled", action="store_true", help="images: sliced inference for small/far signs (slower)")
     args = ap.parse_args()
 
     out = args.out or PROJECT_ROOT / "outputs" / args.source.stem
@@ -90,11 +91,11 @@ def main():
     det = SignDetector(args.weights, conf=args.conf, imgsz=args.imgsz, device=args.device)
 
     if args.source.is_dir():
-        run_images(det, sorted(p for p in args.source.iterdir() if p.suffix.lower() in IMG_EXTS), out)
+        run_images(det, sorted(p for p in args.source.iterdir() if p.suffix.lower() in IMG_EXTS), out, args.tiled)
     elif args.source.suffix.lower() in VIDEO_EXTS:
         run_video(det, args.source, out, args.min_hits)
     else:
-        run_images(det, [args.source], out)
+        run_images(det, [args.source], out, args.tiled)
     print(f"Outputs in {out}")
 
 
