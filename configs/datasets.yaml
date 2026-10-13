@@ -1,0 +1,47 @@
+# Các dataset mà scripts/download_datasets.py sẽ tải.
+#
+# Lấy thông tin Roboflow: mở trang dataset trên https://universe.roboflow.com
+#   -> Download Dataset -> chọn YOLOv8 -> "Show download code", trong code có dạng:
+#      rf.workspace("WORKSPACE").project("PROJECT").version(N)
+#   Copy WORKSPACE, PROJECT, N vào đây. Kiểm tra license (nên là CC BY 4.0) và danh sách lớp.
+#
+# mapping : file map tên lớp nguồn -> key trong classes.yaml. Nếu chưa có, script sẽ tự tạo
+#           file mẫu để nhóm điền (các tên trùng mã QCVN như "P.102" được điền sẵn).
+# unmapped: error | other | drop  (xử lý lớp nguồn chưa map, xem import_dataset.py)
+# enabled : false = bỏ qua dataset này.
+
+datasets:
+  - name: rf_vn_traffic
+    enabled: true
+    source: roboflow
+    workspace: projectxla
+    project: vn_traffic
+    version: 1            # TODO: kiểm tra version mới nhất trên trang dataset
+    mapping: configs/mappings/rf_vn_traffic.yaml
+    unmapped: error
+
+  - name: rf_vn_traffic_sign_2
+    enabled: true
+    source: roboflow
+    workspace: trafficsignvietnamese
+    project: vn_traffic_sign_2
+    version: 1            # TODO: kiểm tra version mới nhất trên trang dataset
+    mapping: configs/mappings/rf_vn_traffic_sign_2.yaml
+    unmapped: error
+
+  # Dữ liệu nhóm tự gán nhãn trên Roboflow (tên lớp đặt đúng bằng key, nên không cần mapping)
+  - name: team
+    enabled: false
+    source: roboflow
+    workspace: TEN_WORKSPACE_CUA_NHOM
+    project: TEN_PROJECT
+    version: 1
+    unmapped: error
+
+  # Dataset dạng file zip (định dạng YOLO) có link tải trực tiếp
+  - name: zip_example
+    enabled: false
+    source: url
+    url: https://example.com/dataset_yolo.zip
+    mapping: configs/mappings/zip_example.yaml
+    unmapped: other

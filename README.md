@@ -10,6 +10,7 @@ configs/
   train.yaml            # tham số train (đã tắt lật ngang, giảm hsv_h,...)
   mappings/             # map tên lớp của dataset ngoài -> key của mình
 scripts/
+  download_datasets.py  # tự tải các dataset trong configs/datasets.yaml (Roboflow / zip) + import
   extract_frames.py     # video -> frame để gán nhãn
   import_dataset.py     # dataset YOLO ngoài (Roboflow...) -> data/pool/<tên>/
   split_dataset.py      # data/pool -> dataset/{train,val,test} + data.yaml (chia theo nhóm, tránh rò rỉ)
@@ -39,7 +40,15 @@ python -c "import torch; print(torch.cuda.is_available())"   # phải in ra True
 Cả nhóm cùng sửa `configs/classes.yaml` và đối chiếu mã biển với **QCVN 41:2024/BGTVT**. Sau khi đã bắt đầu gán nhãn thì **không đổi thứ tự** các lớp; muốn thêm lớp thì thêm vào cuối danh sách.
 
 ### 2. Thu thập dữ liệu
-- **Dataset có sẵn:** tìm "vietnam traffic sign" trên [Roboflow Universe](https://universe.roboflow.com), chọn Export → *YOLOv8* và giải nén vào `downloads/<tên>/`. Có thể dùng thêm Zalo AI 2020 Traffic Sign.
+- **Dataset có sẵn (tải tự động):**
+  1. Tạo tài khoản [Roboflow](https://roboflow.com) miễn phí, vào *Settings → API Keys* để lấy key.
+  2. Copy `.env.example` thành `.env` rồi điền `ROBOFLOW_API_KEY=...`. File `.env` không được commit.
+  3. Khai báo dataset trong [configs/datasets.yaml](configs/datasets.yaml), gồm workspace, project và version lấy từ nút *Download → Show download code* trên trang dataset.
+  4. Chạy:
+     ```bash
+     python scripts/download_datasets.py
+     ```
+     Lần chạy đầu, script tải dataset về `downloads/` và tạo file mapping nháp `configs/mappings/<tên>.yaml`. Điền key cho các dòng `TODO`, xóa dòng `MAPPING_DRAFT`, rồi **chạy lại lệnh trên** để nhập dữ liệu vào `data/pool/`.
 - **Tự quay:** gắn điện thoại lên xe, quay 1080p ban ngày, ban đêm, trời mưa. Chép video vào `data/raw_videos/`:
   ```bash
   python scripts/extract_frames.py --videos data/raw_videos --out data/frames --every 0.5

@@ -87,6 +87,8 @@ def main():
     if problems:
         sys.exit("Fix the mapping first:\n  " + "\n  ".join(problems))
 
+    if (args.out / args.name).exists():  # derived data: re-importing replaces it
+        shutil.rmtree(args.out / args.name)
     out_img = args.out / args.name / "images"
     out_lbl = args.out / args.name / "labels"
     out_img.mkdir(parents=True, exist_ok=True)

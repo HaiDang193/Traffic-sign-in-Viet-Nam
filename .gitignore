@@ -12,6 +12,9 @@ downloads/
 *.mkv
 *.zip
 
+# Secrets (API keys)
+.env
+
 # Python
 __pycache__/
 *.pyc
