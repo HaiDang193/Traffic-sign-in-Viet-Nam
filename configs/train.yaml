@@ -1,0 +1,23 @@
+# Ultralytics training settings for traffic signs. Any key can be overridden from the CLI:
+#   python scripts/train.py --model yolo11s.pt --imgsz 1280 --epochs 150 --name s_1280
+# Full list of options: https://docs.ultralytics.com/modes/train/#train-settings
+
+epochs: 100
+patience: 25          # early stop if val mAP does not improve for N epochs
+imgsz: 960            # signs are small; 640 loses many of them
+batch: -1             # auto batch size for the available GPU memory
+optimizer: auto
+cos_lr: true
+close_mosaic: 10
+
+# --- Augmentation tuned for traffic signs ---
+fliplr: 0.0           # NO horizontal flip: it turns "cấm rẽ trái" into "cấm rẽ phải"
+flipud: 0.0
+hsv_h: 0.005          # color is a key cue (red = cấm, blue = hiệu lệnh, yellow = nguy hiểm)
+hsv_s: 0.5
+hsv_v: 0.4
+degrees: 5.0
+translate: 0.1
+scale: 0.5
+mosaic: 1.0
+mixup: 0.0

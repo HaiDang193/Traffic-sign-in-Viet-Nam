@@ -1,0 +1,12 @@
+# Install PyTorch with CUDA FIRST (see README), then: pip install -r requirements.txt
+ultralytics>=8.3.0
+lap>=0.5.12           # needed by the ByteTrack tracker (video mode)
+opencv-python>=4.9
+pillow>=10.1
+pyyaml>=6.0
+numpy
+pandas
+matplotlib
+streamlit>=1.36
+imageio>=2.34
+imageio-ffmpeg>=0.5
